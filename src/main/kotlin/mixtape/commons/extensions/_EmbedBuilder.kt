@@ -1,7 +1,7 @@
-package gg.mixtape.commons.extensions
+package mixtape.commons.extensions
 
-import gg.mixtape.commons.jda.EmbedBuilder
-import gg.mixtape.commons.jda.EmbedBuilder.*
+import mixtape.commons.jda.EmbedBuilder
+import mixtape.commons.jda.EmbedBuilder.*
 
 /**
  * Convenience method for configuring [Title.text] and [Title.url]

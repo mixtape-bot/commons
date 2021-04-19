@@ -1,4 +1,4 @@
-package gg.mixtape.commons.text
+package mixtape.commons.text
 
 class CodeBlockBuilder {
   var language: String = ""

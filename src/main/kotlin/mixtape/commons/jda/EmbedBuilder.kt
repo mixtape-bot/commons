@@ -1,4 +1,4 @@
-package gg.mixtape.commons.jda
+package mixtape.commons.jda
 
 import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.MessageEmbed

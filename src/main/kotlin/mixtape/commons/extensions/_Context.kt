@@ -1,8 +1,8 @@
-package gg.mixtape.commons.extensions
+package mixtape.commons.extensions
 
+import mixtape.commons.jda.EmbedBuilder
 import kotlinx.coroutines.future.await
 import me.devoxin.flight.api.Context
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.VoiceChannel

@@ -1,4 +1,4 @@
-package gg.mixtape.commons.extensions
+package mixtape.commons.extensions
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel

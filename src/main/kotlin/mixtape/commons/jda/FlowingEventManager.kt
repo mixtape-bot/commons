@@ -1,6 +1,6 @@
-package gg.mixtape.commons.jda
+package mixtape.commons.jda
 
-import gg.mixtape.commons.extensions.asFlow
+import mixtape.commons.extensions.asFlow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel

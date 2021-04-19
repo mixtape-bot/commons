@@ -1,6 +1,6 @@
-package gg.mixtape.commons.extensions
+package mixtape.commons.extensions
 
-import gg.mixtape.commons.jda.FlowingEventManager
+import mixtape.commons.jda.FlowingEventManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.JDA

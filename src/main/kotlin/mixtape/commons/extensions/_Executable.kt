@@ -1,4 +1,4 @@
-package gg.mixtape.commons.extensions
+package mixtape.commons.extensions
 
 import me.devoxin.flight.internal.arguments.types.Snowflake
 import me.devoxin.flight.internal.entities.Executable

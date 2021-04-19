@@ -1,4 +1,4 @@
-package gg.mixtape.commons.text
+package mixtape.commons.text
 
 import java.lang.Integer.max
 
