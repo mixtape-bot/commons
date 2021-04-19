@@ -22,8 +22,9 @@ import kotlin.coroutines.CoroutineContext
  *   The dispatcher to use, it's recommended to use the
  *   [net.dv8tion.jda.internal.utils.config.ThreadingConfig.eventPool] as a coroutine dispatcher
  */
-class FlowingEventManager(private val dispatcher: CoroutineDispatcher = Dispatchers.Default) : IEventManager,
-  CoroutineScope {
+class FlowingEventManager(
+  private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+) : IEventManager, CoroutineScope {
   override val coroutineContext: CoroutineContext
     get() = dispatcher + SupervisorJob()
 
