@@ -1,5 +1,5 @@
 import org.gradle.api.artifacts.dsl.RepositoryHandler
-import java.net.URI
+import org.gradle.kotlin.dsl.maven
 
 object Versions {
   /* kotlin */
@@ -21,12 +21,6 @@ object Dependencies {
   const val jda = "net.dv8tion:JDA:${Versions.jda}"
 }
 
-fun RepositoryHandler.dv8tion() = maven {
-  name = "m8-dv8tion"
-  url = URI("https://m2.dv8tion.net/releases")
-}
+fun RepositoryHandler.dv8tion() = maven("https://m2.dv8tion.net/releases")
 
-fun RepositoryHandler.jitpack() = maven {
-  name = "jitpack"
-  url = URI("https://jitpack.io")
-}
+fun RepositoryHandler.jitpack() = maven("https://jitpack.io")

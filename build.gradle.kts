@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+  id("maven")
   kotlin("jvm") version Versions.kotlin
 }
 
@@ -33,4 +34,9 @@ tasks.withType<KotlinCompile> {
       CompilerArgs.flowPreview
     )
   }
+}
+
+tasks.withType<Wrapper> {
+  gradleVersion = "6.8"
+  distributionType = Wrapper.DistributionType.ALL
 }
