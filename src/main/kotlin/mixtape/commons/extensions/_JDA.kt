@@ -4,7 +4,33 @@ import mixtape.commons.jda.FlowingEventManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.GenericEvent
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
+/**
+ * Convenience method for creating an instance of [JDA]
+ *
+ * @param token
+ *   The bot token to use.
+ *
+ * @param builder
+ *   Configures the [JDA] instance.
+ *
+ * @return The created [JDA] instance.
+ */
+@OptIn(ExperimentalContracts::class)
+fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
+  contract {
+    callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
+  }
+
+  return JDABuilder.createDefault(token)
+    .apply(builder)
+    .build()
+}
 
 /**
  * Convenience method that invokes [block] whenever [T] is emitted on [FlowingEventManager.events]
@@ -17,7 +43,7 @@ import net.dv8tion.jda.api.events.GenericEvent
  *
  * @return Job, can be used to cancel any further processing of [T].
  */
-inline fun <reified T : GenericEvent> JDA.on(scope: CoroutineScope? = null, crossinline block: T.() -> Unit): Job {
+inline fun <reified T : GenericEvent> JDA.on(scope: CoroutineScope? = null, crossinline block: suspend T.() -> Unit): Job {
   require(eventManager is FlowingEventManager) {
     "JDA#on can only be used with the ${FlowingEventManager::class.simpleName}."
   }

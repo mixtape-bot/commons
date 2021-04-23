@@ -61,7 +61,6 @@ fun Context.reply(mention: Boolean = false, builder: EmbedBuilder.() -> Unit) {
     }
 }
 
-
 /**
  * Same as [reply] byt async.
  *
@@ -78,7 +77,6 @@ suspend fun Context.replyAsync(content: String, mention: Boolean = false): Messa
     .submit()
     .await()
 }
-
 
 /**
  * Same as [reply] but async.

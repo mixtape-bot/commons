@@ -13,9 +13,17 @@ fun threadFactory(
   val counter = AtomicInteger()
   return ThreadFactory { runnable ->
     Thread(runnable, name.format(Locale.ROOT, counter.getAndIncrement())).apply {
-      daemon?.let { this.isDaemon = it }
-      priority?.let { this.priority = priority }
-      exceptionHandler?.let { this.uncaughtExceptionHandler = it }
+      daemon?.let {
+        this.isDaemon = it
+      }
+
+      priority?.let {
+        this.priority = priority
+      }
+
+      exceptionHandler?.let {
+        this.uncaughtExceptionHandler = it
+      }
     }
   }
 }

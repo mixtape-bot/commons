@@ -44,11 +44,13 @@ class FlowingEventManager(
    *
    * @return Job
    */
-  inline fun <reified T : GenericEvent> on(scope: CoroutineScope = this, crossinline block: T.() -> Unit): Job {
+  inline fun <reified T : GenericEvent> on(scope: CoroutineScope = this, crossinline block: suspend T.() -> Unit): Job {
     return events.filterIsInstance<T>().onEach { event ->
-      event
-        .runCatching { block() }
-        .onFailure { logger.error("Error occurred while handling ${T::class.simpleName}", it) }
+      launch {
+        event
+          .runCatching { block() }
+          .onFailure { logger.error("Error occurred while handling ${T::class.simpleName}", it) }
+      }
     }.launchIn(scope)
   }
 

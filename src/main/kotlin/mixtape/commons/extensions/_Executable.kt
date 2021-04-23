@@ -60,7 +60,8 @@ fun Executable.generateUsage(withTypes: Boolean = true): String {
 fun Executable.generateDefaultExample(): String =
   arguments
     .joinToString(" ") {
-      argumentExamples[it.type] ?: if (it.type.isEnum) it.type.enumConstants.first().toString()
-        .toLowerCase() else "[unknown]"
+      argumentExamples[it.type]
+        ?: if (it.type.isEnum) it.type.enumConstants.first().toString().toLowerCase()
+        else "[unknown]"
     }
     .trim()

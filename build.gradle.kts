@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("maven")
+  maven
   kotlin("jvm") version Versions.kotlin
 }
 
 group = "gg.mixtape"
-version = "1.0"
+version = "1.2.1"
 
 repositories {
   mavenCentral()
