@@ -1,8 +1,8 @@
 package mixtape.commons.extensions
 
-import mixtape.commons.jda.EmbedBuilder
 import kotlinx.coroutines.future.await
 import me.devoxin.flight.api.Context
+import mixtape.commons.jda.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.VoiceChannel
@@ -11,19 +11,19 @@ import net.dv8tion.jda.api.entities.VoiceChannel
  * The member's current [VoiceChannel], if any.
  */
 val Context.voiceChannel: VoiceChannel?
-  get() = member?.voiceState?.channel
+    get() = member?.voiceState?.channel
 
 /**
  * Our current [VoiceChannel], if any.
  */
 val Context.selfVoiceChannel: VoiceChannel?
-  get() = selfMember?.voiceState?.channel
+    get() = selfMember?.voiceState?.channel
 
 /**
  * Us a Guild Member
  */
 val Context.selfMember: Member?
-  get() = guild?.selfMember
+    get() = guild?.selfMember
 
 /**
  * Convenience method for replying to [Context.message]
@@ -35,12 +35,12 @@ val Context.selfMember: Member?
  *   Whether to mention we're replying to.
  */
 fun Context.reply(content: String, mention: Boolean = false) {
-  messageChannel.sendMessage(content)
-    .apply {
-      mentionRepliedUser(mention)
-      reference(message)
-      queue()
-    }
+    messageChannel.sendMessage(content)
+        .apply {
+            mentionRepliedUser(mention)
+            reference(message)
+            queue()
+        }
 }
 
 /**
@@ -53,12 +53,12 @@ fun Context.reply(content: String, mention: Boolean = false) {
  *   The embed builder.
  */
 fun Context.reply(mention: Boolean = false, builder: EmbedBuilder.() -> Unit) {
-  messageChannel.sendMessage(EmbedBuilder().apply(builder).build())
-    .apply {
-      mentionRepliedUser(mention)
-      reference(message)
-      queue()
-    }
+    messageChannel.sendMessageEmbeds(buildEmbed(builder))
+        .apply {
+            mentionRepliedUser(mention)
+            reference(message)
+            queue()
+        }
 }
 
 /**
@@ -71,11 +71,11 @@ fun Context.reply(mention: Boolean = false, builder: EmbedBuilder.() -> Unit) {
  *   Whether to mention we're replying to.
  */
 suspend fun Context.replyAsync(content: String, mention: Boolean = false): Message {
-  return messageChannel.sendMessage(content)
-    .mentionRepliedUser(mention)
-    .reference(message)
-    .submit()
-    .await()
+    return messageChannel.sendMessage(content)
+        .mentionRepliedUser(mention)
+        .reference(message)
+        .submit()
+        .await()
 }
 
 /**
@@ -88,8 +88,8 @@ suspend fun Context.replyAsync(content: String, mention: Boolean = false): Messa
  *   The embed builder.
  */
 suspend fun Context.replyAsync(mention: Boolean = false, builder: EmbedBuilder.() -> Unit): Message {
-  return messageChannel.sendMessage(EmbedBuilder().apply(builder).build())
-    .mentionRepliedUser(mention)
-    .reference(message)
-    .submit().await()
+    return messageChannel.sendMessageEmbeds(buildEmbed(builder))
+        .mentionRepliedUser(mention)
+        .reference(message)
+        .submit().await()
 }

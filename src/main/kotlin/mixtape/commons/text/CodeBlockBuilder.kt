@@ -1,23 +1,23 @@
 package mixtape.commons.text
 
 class CodeBlockBuilder {
-  var language: String = ""
+    var language: String = ""
 
-  private var lines: MutableList<String> = mutableListOf()
+    private var lines: MutableList<String> = mutableListOf()
 
-  fun line(text: String = "", newLine: Boolean = true) =
-    lines.add("$text${if (newLine) "\n" else ""}")
+    fun line(text: String = "", newLine: Boolean = true) =
+        lines.add("$text${if (newLine) "\n" else ""}")
 
-  fun build(): String =
-    buildString {
-      appendLine("```$language")
-      for (line in lines) {
-        append(line)
-      }
+    fun build(): String =
+        buildString {
+            appendLine("```$language")
+            for (line in lines) {
+                append(line)
+            }
 
-      append("\n```")
-    }
+            append("\n```")
+        }
 }
 
 fun code(builder: CodeBlockBuilder.() -> Unit): String =
-  CodeBlockBuilder().apply(builder).build()
+    CodeBlockBuilder().apply(builder).build()

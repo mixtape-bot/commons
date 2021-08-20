@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.flow
  * Creates a flow using this channel.
  */
 fun <T> ReceiveChannel<T>.asFlow(): Flow<T> = flow {
-  try {
-    for (event in this@asFlow) {
-      emit(event)
+    try {
+        for (event in this@asFlow) {
+            emit(event)
+        }
+    } catch (ex: CancellationException) {
+        // ignore
     }
-  } catch (ex: CancellationException) {
-    // ignore
-  }
 }

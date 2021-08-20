@@ -1,8 +1,8 @@
 package mixtape.commons.extensions
 
-import mixtape.commons.jda.FlowingEventManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import mixtape.commons.jda.FlowingEventManager
 import net.dv8tion.jda.api.JDABuilder
 
 /**
@@ -14,6 +14,6 @@ import net.dv8tion.jda.api.JDABuilder
  * @return JDABuilder, useful for chaining
  */
 fun JDABuilder.useFlowingEventManager(dispatcher: CoroutineDispatcher = Dispatchers.Default): JDABuilder {
-  setEventManager(FlowingEventManager(dispatcher))
-  return this
+    setEventManager(FlowingEventManager(dispatcher))
+    return this
 }

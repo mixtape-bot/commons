@@ -1,8 +1,8 @@
 package mixtape.commons.extensions
 
-import mixtape.commons.jda.FlowingEventManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import mixtape.commons.jda.FlowingEventManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.GenericEvent
@@ -23,13 +23,13 @@ import kotlin.contracts.contract
  */
 @OptIn(ExperimentalContracts::class)
 fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
-  contract {
-    callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
-  }
+    contract {
+        callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
+    }
 
-  return JDABuilder.createDefault(token)
-    .apply(builder)
-    .build()
+    return JDABuilder.createDefault(token)
+        .apply(builder)
+        .build()
 }
 
 /**
@@ -43,12 +43,15 @@ fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
  *
  * @return Job, can be used to cancel any further processing of [T].
  */
-inline fun <reified T : GenericEvent> JDA.on(scope: CoroutineScope? = null, crossinline block: suspend T.() -> Unit): Job {
-  require(eventManager is FlowingEventManager) {
-    "JDA#on can only be used with the ${FlowingEventManager::class.simpleName}."
-  }
+inline fun <reified T : GenericEvent> JDA.on(
+    scope: CoroutineScope? = null,
+    crossinline block: suspend T.() -> Unit
+): Job {
+    require(eventManager is FlowingEventManager) {
+        "JDA#on can only be used with the ${FlowingEventManager::class.simpleName}."
+    }
 
-  return with(eventManager as FlowingEventManager) {
-    on(scope ?: this, block)
-  }
+    return with(eventManager as FlowingEventManager) {
+        on(scope ?: this, block)
+    }
 }

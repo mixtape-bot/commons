@@ -1,10 +1,10 @@
 package mixtape.commons.jda
 
-import mixtape.commons.extensions.asFlow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import mixtape.commons.extensions.asFlow
 import net.dv8tion.jda.api.events.ExceptionEvent
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.ShutdownEvent
@@ -23,88 +23,91 @@ import kotlin.coroutines.CoroutineContext
  *   [net.dv8tion.jda.internal.utils.config.ThreadingConfig.eventPool] as a coroutine dispatcher
  */
 class FlowingEventManager(
-  private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : IEventManager, CoroutineScope {
-  override val coroutineContext: CoroutineContext
-    get() = dispatcher + SupervisorJob()
+    override val coroutineContext: CoroutineContext
+        get() = dispatcher + SupervisorJob()
 
-  val events
-    get() = channel.openSubscription().asFlow().buffer(Channel.UNLIMITED)
+    val events
+        get() = channel.openSubscription().asFlow().buffer(Channel.UNLIMITED)
 
-  private val listeners = hashMapOf<EventListener, Job>()
-  private val channel = BroadcastChannel<GenericEvent>(1)
+    private val listeners = hashMapOf<EventListener, Job>()
+    private val channel = BroadcastChannel<GenericEvent>(1)
 
-  /**
-   * Launches a processing job of [T]
-   *
-   * @param scope
-   *
-   * @param block
-   *   Block that will be invoked whenever [T] is emitted on [events]
-   *
-   * @return Job
-   */
-  inline fun <reified T : GenericEvent> on(scope: CoroutineScope = this, crossinline block: suspend T.() -> Unit): Job {
-    return events.filterIsInstance<T>().onEach { event ->
-      launch {
-        event
-          .runCatching { block() }
-          .onFailure { logger.error("Error occurred while handling ${T::class.simpleName}", it) }
-      }
-    }.launchIn(scope)
-  }
-
-  /**
-   *
-   */
-  override fun handle(event: GenericEvent) = runBlocking {
-    try {
-      channel.send(event)
-    } catch (ex: Exception) {
-      channel.send(ExceptionEvent(event.jda, ex, false))
+    /**
+     * Launches a processing job of [T]
+     *
+     * @param scope
+     *
+     * @param block
+     *   Block that will be invoked whenever [T] is emitted on [events]
+     *
+     * @return Job
+     */
+    inline fun <reified T : GenericEvent> on(
+        scope: CoroutineScope = this,
+        crossinline block: suspend T.() -> Unit
+    ): Job {
+        return events.filterIsInstance<T>().onEach { event ->
+            launch {
+                event
+                    .runCatching { block() }
+                    .onFailure { logger.error("Error occurred while handling ${T::class.simpleName}", it) }
+            }
+        }.launchIn(scope)
     }
 
-    if (event is ShutdownEvent) {
-      channel.cancel()
-    }
-  }
+    /**
+     *
+     */
+    override fun handle(event: GenericEvent) = runBlocking {
+        try {
+            channel.send(event)
+        } catch (ex: Exception) {
+            channel.send(ExceptionEvent(event.jda, ex, false))
+        }
 
-  /**
-   * Registers the provided [listener]
-   *
-   * @param listener
-   *   The [EventListener] to register
-   */
-  override fun register(listener: Any) {
-    require(listener is EventListener) {
-      "Listener must implement EventListener"
-    }
-
-    listeners[listener] = on(this, listener::onEvent)
-  }
-
-  /**
-   * Unregisters the provided [listener]
-   *
-   * @param listener
-   *   The [EventListener] to remove
-   */
-  override fun unregister(listener: Any) {
-    require(listener is EventListener) {
-      "Listener must implement EventListener"
+        if (event is ShutdownEvent) {
+            channel.cancel()
+        }
     }
 
-    listeners.remove(listener)?.cancel()
-  }
+    /**
+     * Registers the provided [listener]
+     *
+     * @param listener
+     *   The [EventListener] to register
+     */
+    override fun register(listener: Any) {
+        require(listener is EventListener) {
+            "Listener must implement EventListener"
+        }
 
-  /**
-   * Returns all registered listeners in [listeners]
-   */
-  override fun getRegisteredListeners(): List<Any> {
-    return listeners.keys.toList()
-  }
+        listeners[listener] = on(this, listener::onEvent)
+    }
 
-  companion object {
-    val logger: Logger = LoggerFactory.getLogger(FlowingEventManager::class.java)
-  }
+    /**
+     * Unregisters the provided [listener]
+     *
+     * @param listener
+     *   The [EventListener] to remove
+     */
+    override fun unregister(listener: Any) {
+        require(listener is EventListener) {
+            "Listener must implement EventListener"
+        }
+
+        listeners.remove(listener)?.cancel()
+    }
+
+    /**
+     * Returns all registered listeners in [listeners]
+     */
+    override fun getRegisteredListeners(): List<Any> {
+        return listeners.keys.toList()
+    }
+
+    companion object {
+        val logger: Logger = LoggerFactory.getLogger(FlowingEventManager::class.java)
+    }
 }

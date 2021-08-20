@@ -2,6 +2,13 @@ package mixtape.commons.extensions
 
 import mixtape.commons.jda.EmbedBuilder
 import mixtape.commons.jda.EmbedBuilder.*
+import net.dv8tion.jda.api.entities.MessageEmbed
+
+inline fun buildEmbed(build: EmbedBuilder.() -> Unit): MessageEmbed {
+    return EmbedBuilder()
+        .apply(build)
+        .build()
+}
 
 /**
  * Convenience method for configuring [Title.text] and [Title.url]
@@ -13,8 +20,8 @@ import mixtape.commons.jda.EmbedBuilder.*
  *   URL of the title, makes it clickable.
  */
 fun EmbedBuilder.title(text: String, url: String? = null) = title {
-  this.text = text
-  this.url = url
+    this.text = text
+    this.url = url
 }
 
 /**
@@ -27,8 +34,8 @@ fun EmbedBuilder.title(text: String, url: String? = null) = title {
  *   URL of the footer icon, if any.
  */
 fun EmbedBuilder.footer(text: String, iconUrl: String? = null) = footer {
-  this.text = text
-  this.iconUrl = iconUrl
+    this.text = text
+    this.iconUrl = iconUrl
 }
 
 /**
@@ -38,7 +45,7 @@ fun EmbedBuilder.footer(text: String, iconUrl: String? = null) = footer {
  *   URL of the image to include
  */
 fun EmbedBuilder.image(url: String) = image {
-  this.url = url
+    this.url = url
 }
 
 /**
@@ -48,7 +55,7 @@ fun EmbedBuilder.image(url: String) = image {
  *   URL of the image to include
  */
 fun EmbedBuilder.thumbnail(url: String) = thumbnail {
-  this.url = url
+    this.url = url
 }
 
 /**
@@ -58,9 +65,9 @@ fun EmbedBuilder.thumbnail(url: String) = thumbnail {
  *   Value to set
  */
 fun EmbedBuilder.author(name: String, url: String? = null, iconUrl: String? = null) = author {
-  this.name = name
-  this.url = url
-  this.iconUrl = iconUrl
+    this.name = name
+    this.url = url
+    this.iconUrl = iconUrl
 }
 
 /**
@@ -76,9 +83,9 @@ fun EmbedBuilder.author(name: String, url: String? = null, iconUrl: String? = nu
  *   Whether this field is inlined with the others.
  */
 fun EmbedBuilder.field(name: String?, value: Any, inline: Boolean = false) {
-  field {
-    this.name = name ?: EmbedBuilder.ZERO_WIDTH_SPACE
-    this.value = value.toString()
-    this.inline = inline
-  }
+    field {
+        this.name = name ?: EmbedBuilder.ZERO_WIDTH_SPACE
+        this.value = value.toString()
+        this.inline = inline
+    }
 }

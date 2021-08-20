@@ -1,11 +1,11 @@
 plugins {
-  `kotlin-dsl`
+    `kotlin-dsl`
 }
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-  implementation(kotlin("gradle-plugin-api", version = "1.5.21"))
+    implementation(kotlin("gradle-plugin-api", version = "1.5.21"))
 }
