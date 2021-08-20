@@ -1,10 +1,8 @@
 package mixtape.commons.jda
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import mixtape.commons.extensions.asFlow
 import net.dv8tion.jda.api.events.ExceptionEvent
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.ShutdownEvent
@@ -23,16 +21,16 @@ import kotlin.coroutines.CoroutineContext
  *   [net.dv8tion.jda.internal.utils.config.ThreadingConfig.eventPool] as a coroutine dispatcher
  */
 class FlowingEventManager(
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val eventFlow: MutableSharedFlow<GenericEvent> = MutableSharedFlow<GenericEvent>(extraBufferCapacity = Int.MAX_VALUE)
 ) : IEventManager, CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = dispatcher + SupervisorJob()
 
     val events
-        get() = channel.openSubscription().asFlow().buffer(Channel.UNLIMITED)
+        get() = eventFlow.buffer(Channel.UNLIMITED)
 
     private val listeners = hashMapOf<EventListener, Job>()
-    private val channel = BroadcastChannel<GenericEvent>(1)
 
     /**
      * Launches a processing job of [T]
@@ -62,13 +60,13 @@ class FlowingEventManager(
      */
     override fun handle(event: GenericEvent) = runBlocking {
         try {
-            channel.send(event)
+            eventFlow.emit(event)
         } catch (ex: Exception) {
-            channel.send(ExceptionEvent(event.jda, ex, false))
+            eventFlow.emit(ExceptionEvent(event.jda, ex, false))
         }
 
         if (event is ShutdownEvent) {
-            channel.cancel()
+            currentCoroutineContext().cancel()
         }
     }
 
