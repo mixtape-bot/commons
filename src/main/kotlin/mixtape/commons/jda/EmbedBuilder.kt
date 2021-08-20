@@ -10,6 +10,13 @@ class EmbedBuilder {
 
     companion object {
         const val ZERO_WIDTH_SPACE = "\u200b"
+
+        const val MAX_TITLE_LENGTH = 256
+        const val MAX_FIELD_NAME_LENGTH = 256
+        const val MAX_FIELD_VALUE_LENGTH = 256
+        const val MAX_AUTHOR_NAME_LENGTH = 256
+        const val MAX_FOOTER_TEXT_LENGTH = 2048
+        const val MAX_DESCRIPTION_LENGTH = 4096
     }
 
     /**
@@ -139,8 +146,8 @@ class EmbedBuilder {
         var proxyIconUrl: String? = null
 
         fun build(): MessageEmbed.Footer {
-            require(!text.isNullOrEmpty() && text!!.length <= 1024) {
-                "Footer text must not be null or empty and cannot exceed 1024 characters."
+            require(!text.isNullOrEmpty() && text!!.length in 1..MAX_FOOTER_TEXT_LENGTH) {
+                "Footer text must not be null or empty and cannot exceed $MAX_FOOTER_TEXT_LENGTH characters."
             }
 
             return MessageEmbed.Footer(text, iconUrl, proxyIconUrl)
@@ -182,8 +189,8 @@ class EmbedBuilder {
         var iconUrl: String? = null
 
         fun build(): MessageEmbed.AuthorInfo {
-            require(!name.isNullOrEmpty() && name!!.length <= 256) {
-                "Author name must not me null or empty. And cannot exceed 256 characters."
+            require(!name.isNullOrEmpty() && name!!.length in 1..MAX_AUTHOR_NAME_LENGTH) {
+                "Author name must not be null or empty. And cannot exceed $MAX_AUTHOR_NAME_LENGTH characters."
             }
 
             return MessageEmbed.AuthorInfo(name, iconUrl, url, null)
@@ -266,12 +273,12 @@ class EmbedBuilder {
         var inline: Boolean = false
 
         fun build(): MessageEmbed.Field {
-            require(!name.isNullOrEmpty() && name!!.length <= 256) {
-                "Field name must not be null or empty. And cannot exceed 256 characters."
+            require(!name.isNullOrEmpty() && name!!.length in 1..MAX_FIELD_NAME_LENGTH) {
+                "Field name must not be null or empty. And cannot exceed $MAX_FIELD_NAME_LENGTH characters."
             }
 
-            require(!value.isNullOrEmpty() && value!!.length <= 1024) {
-                "Field value must be not be null or an empty string and cannot exceed 1024 characters."
+            require(!value.isNullOrEmpty() && value!!.length in 1..MAX_FIELD_VALUE_LENGTH) {
+                "Field value must be not be null or an empty string and cannot exceed $MAX_FIELD_VALUE_LENGTH characters."
             }
 
             return MessageEmbed.Field(name, value, inline, false)
@@ -282,13 +289,19 @@ class EmbedBuilder {
      * Builds a usable [MessageEmbed].
      */
     fun build(): MessageEmbed {
+        title?.let {
+            require(!it.text.isNullOrEmpty() && it.text!!.length in 1..MAX_TITLE_LENGTH) {
+                "Title text must not be empty or exceed $MAX_TITLE_LENGTH characters."
+            }
+        }
+
         if (description != null) {
             require(description!!.isNotEmpty()) {
                 "Description must not be empty."
             }
 
-            require(description!!.length in 1..2048) {
-                "Description not exceed 2048 characters."
+            require(description!!.length in 1..MAX_DESCRIPTION_LENGTH) {
+                "Description not exceed $MAX_DESCRIPTION_LENGTH characters."
             }
         }
 
