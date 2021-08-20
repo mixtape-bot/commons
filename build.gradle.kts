@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version Versions.kotlin
 }
 
-group = "bot.mixtape"
+group = "gg.mixtape"
 version = "1.3.0"
 
 repositories {
@@ -25,6 +25,24 @@ dependencies {
     api(Dependencies.jda)
 }
 
+/* tasks */
+val sourcesJar = task<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allJava)
+}
+
+tasks.build {
+    dependsOn(tasks.jar)
+    dependsOn(sourcesJar)
+}
+
+tasks.publish {
+    dependsOn(tasks.build)
+    onlyIf {
+        System.getenv("JFROG_USERNAME") != null && System.getenv("JFROG_PASSWORD") != null
+    }
+}
+
 tasks.withType<KotlinCompile> {
     targetCompatibility = "16"
     sourceCompatibility = "16"
@@ -36,5 +54,54 @@ tasks.withType<KotlinCompile> {
             CompilerArgs.experimentalCoroutinesApi,
             CompilerArgs.flowPreview
         )
+    }
+}
+
+/* publishing */
+publishing {
+    repositories {
+        maven("https://dimensional.jfrog.io/artifactory/maven") {
+            name = "jfrog"
+            credentials {
+                username = System.getenv("JFROG_USERNAME")
+                password = System.getenv("JFROG_PASSWORD")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("jfrog") {
+            from(components["java"])
+
+            group = project.group as String
+            version = project.version as String
+            artifactId = "commons"
+
+            pom {
+                name.set("Mixtape Commons")
+                description.set("Common utilities used within Mixtape")
+                url.set("https://github.com/mixtape-bot/commons")
+
+                organization {
+                    name.set("Mixtape Bot")
+                    url.set("https://github.com/mixtape-bot")
+                }
+
+                developers {
+                    developer {
+                        name.set("melike2d")
+                    }
+                }
+
+                licenses {
+                    license {
+                        name.set("Apache 2.0")
+                        url.set("https://opensource.org/licenses/Apache-2.0")
+                    }
+                }
+            }
+
+            artifact(sourcesJar)
+        }
     }
 }
