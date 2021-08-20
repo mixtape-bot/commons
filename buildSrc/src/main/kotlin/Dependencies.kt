@@ -1,14 +1,11 @@
-import org.gradle.api.artifacts.dsl.RepositoryHandler
-import org.gradle.kotlin.dsl.maven
-
 object Versions {
   /* kotlin */
-  const val kotlin = "1.4.32" // heh heh
-  const val kotlinxCoroutines = "1.4.3"
+  const val kotlin = "1.5.21"
+  const val kotlinxCoroutines = "1.5.1"
 
   /* discord */
-  const val flight = "ccfd2e61f4"
-  const val jda = "4.2.1_259"
+  const val flight = "2.1.6"
+  const val jda = "4.3.0_310"
 }
 
 object Dependencies {
@@ -17,10 +14,6 @@ object Dependencies {
   const val kotlinxCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinxCoroutines}"
 
   /* discord */
-  const val flight = "com.github.mixtape-bot:Flight:${Versions.flight}"
+  const val flight = "gg.mixtape:flight:${Versions.flight}"
   const val jda = "net.dv8tion:JDA:${Versions.jda}"
 }
-
-fun RepositoryHandler.dv8tion() = maven("https://m2.dv8tion.net/releases")
-
-fun RepositoryHandler.jitpack() = maven("https://jitpack.io")

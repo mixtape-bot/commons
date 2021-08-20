@@ -1,17 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  maven
+  `maven-publish`
   kotlin("jvm") version Versions.kotlin
 }
 
-group = "gg.mixtape"
-version = "1.2.1"
+group = "bot.mixtape"
+version = "1.3.0"
 
 repositories {
+  maven("https://dimensional.jfrog.io/artifactory/maven")
+  maven("https://m2.dv8tion.net/releases")
   mavenCentral()
-  dv8tion()
-  jitpack()
 }
 
 dependencies {
@@ -25,8 +25,10 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
+  targetCompatibility = "16"
+  sourceCompatibility = "16"
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "16"
     freeCompilerArgs = listOf(
       CompilerArgs.requiresOptIn,
       CompilerArgs.experimentalStdlibApi,
@@ -34,9 +36,4 @@ tasks.withType<KotlinCompile> {
       CompilerArgs.flowPreview
     )
   }
-}
-
-tasks.withType<Wrapper> {
-  gradleVersion = "6.8"
-  distributionType = Wrapper.DistributionType.ALL
 }
