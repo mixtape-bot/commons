@@ -3,7 +3,14 @@ package mixtape.commons.text
 import java.lang.Integer.max
 
 class ProLogBuilder {
-    private val lines = ArrayList<Line>()
+    var lines = mutableListOf<Line>()
+
+    /**
+     * Adds a new blank line
+     */
+    fun line(): ProLogBuilder {
+        return line(Line("", ""))
+    }
 
     /**
      * Add a new line.
@@ -14,8 +21,8 @@ class ProLogBuilder {
      * @param value
      *   the value of the line
      */
-    fun addLine(name: String, value: Any): ProLogBuilder =
-        addLine(Line(name, value))
+    fun line(name: String, value: Any): ProLogBuilder =
+        line(Line(name, value))
 
 
     /**
@@ -24,16 +31,9 @@ class ProLogBuilder {
      * @param line
      *   The line to add.
      */
-    fun addLine(line: Line): ProLogBuilder {
+    fun line(line: Line): ProLogBuilder {
         lines.add(line)
         return this
-    }
-
-    /**
-     * Adds a new blank line
-     */
-    fun addBlankLine(): ProLogBuilder {
-        return addLine(Line("", ""))
     }
 
     /**
@@ -42,7 +42,7 @@ class ProLogBuilder {
     fun build(): String {
         val padding = this.calculatePadding()
 
-        return code {
+        return buildCodeBlock {
             language = "prolog"
             for (line in lines) {
                 if (line.name.isNotEmpty() && line.value.toString().isNotEmpty()) {
@@ -69,5 +69,7 @@ class ProLogBuilder {
 
 data class Line(val name: String, val value: Any)
 
-fun prolog(builder: ProLogBuilder.() -> Unit): String =
-    ProLogBuilder().apply(builder).build()
+fun buildProlog(builder: ProLogBuilder.() -> Unit): String =
+    ProLogBuilder()
+        .apply(builder)
+        .build()

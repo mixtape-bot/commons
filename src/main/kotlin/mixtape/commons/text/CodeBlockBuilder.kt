@@ -19,5 +19,7 @@ class CodeBlockBuilder {
         }
 }
 
-fun code(builder: CodeBlockBuilder.() -> Unit): String =
-    CodeBlockBuilder().apply(builder).build()
+fun buildCodeBlock(builder: CodeBlockBuilder.() -> Unit): String =
+    CodeBlockBuilder()
+        .apply(builder)
+        .build()
