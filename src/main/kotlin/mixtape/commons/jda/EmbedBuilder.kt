@@ -13,7 +13,7 @@ class EmbedBuilder {
 
         const val MAX_TITLE_LENGTH = 256
         const val MAX_FIELD_NAME_LENGTH = 256
-        const val MAX_FIELD_VALUE_LENGTH = 256
+        const val MAX_FIELD_VALUE_LENGTH = 1024
         const val MAX_AUTHOR_NAME_LENGTH = 256
         const val MAX_FOOTER_TEXT_LENGTH = 2048
         const val MAX_DESCRIPTION_LENGTH = 4096

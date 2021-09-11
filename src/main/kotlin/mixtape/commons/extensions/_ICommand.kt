@@ -1,7 +1,7 @@
 package mixtape.commons.extensions
 
 import me.devoxin.flight.internal.arguments.types.Snowflake
-import me.devoxin.flight.internal.entities.Executable
+import me.devoxin.flight.internal.entities.ICommand
 import net.dv8tion.jda.api.entities.*
 import java.net.URL
 
@@ -36,7 +36,7 @@ val argumentExamples = hashMapOf(
  * @param withTypes
  *   Whether argument types should be included.
  */
-fun Executable.generateUsage(withTypes: Boolean = true): String {
+fun ICommand.generateUsage(withTypes: Boolean = true): String {
     val usage = buildString {
         arguments.forEach { append("${it.format(withTypes)} ") }
     }
@@ -57,7 +57,7 @@ fun Executable.generateUsage(withTypes: Boolean = true): String {
  *
  * `@Member "some thing"`
  */
-fun Executable.generateDefaultExample(): String =
+fun ICommand.generateDefaultExample(): String =
     arguments
         .joinToString(" ") {
             argumentExamples[it.type]

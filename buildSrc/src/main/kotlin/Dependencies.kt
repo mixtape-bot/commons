@@ -1,11 +1,11 @@
 object Versions {
     /* kotlin */
-    const val kotlin = "1.5.21"
+    const val kotlin = "1.5.30"
     const val kotlinxCoroutines = "1.5.1"
 
     /* discord */
-    const val flight = "2.1.6"
-    const val jda = "4.3.0_310"
+    const val flight = "3.0.0"
+    const val jda = "development-SNAPSHOT"
 }
 
 object Dependencies {
@@ -16,5 +16,5 @@ object Dependencies {
 
     /* discord */
     const val flight = "gg.mixtape:flight:${Versions.flight}"
-    const val jda = "net.dv8tion:JDA:${Versions.jda}"
+    const val jda = "com.github.mixtape-oss:JDA:${Versions.jda}"
 }

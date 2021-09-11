@@ -6,9 +6,10 @@ plugins {
 }
 
 group = "gg.mixtape"
-version = "1.3.0"
+version = "1.4.1"
 
 repositories {
+    maven("https://jitpack.io")
     maven("https://dimensional.jfrog.io/artifactory/maven")
     maven("https://m2.dv8tion.net/releases")
     mavenCentral()
@@ -28,7 +29,7 @@ dependencies {
 /* tasks */
 val sourcesJar = task<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
-    from(sourceSets["main"].allJava)
+    from(sourceSets["main"].allSource)
 }
 
 tasks.build {
