@@ -7,13 +7,12 @@ import java.net.URL
 import java.time.OffsetDateTime
 
 class EmbedBuilder {
-
     companion object {
         const val ZERO_WIDTH_SPACE = "\u200b"
 
         const val MAX_TITLE_LENGTH = 256
         const val MAX_FIELD_NAME_LENGTH = 256
-        const val MAX_FIELD_VALUE_LENGTH = 256
+        const val MAX_FIELD_VALUE_LENGTH = 1024
         const val MAX_AUTHOR_NAME_LENGTH = 256
         const val MAX_FOOTER_TEXT_LENGTH = 2048
         const val MAX_DESCRIPTION_LENGTH = 4096
@@ -70,7 +69,7 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Title]
      */
-    fun title(builder: Title.() -> Unit) {
+    inline fun title(builder: Title.() -> Unit) {
         title = Title().apply(builder)
     }
 
@@ -80,7 +79,7 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Footer]
      */
-    fun footer(builder: Footer.() -> Unit) {
+    inline fun footer(builder: Footer.() -> Unit) {
         footer = Footer().apply(builder)
     }
 
@@ -90,7 +89,7 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Image]
      */
-    fun image(builder: Image.() -> Unit) {
+    inline fun image(builder: Image.() -> Unit) {
         image = Image().apply(builder)
     }
 
@@ -100,7 +99,7 @@ class EmbedBuilder {
      * @param builder
      *   Configures the thumbnail data
      */
-    fun thumbnail(builder: Thumbnail.() -> Unit) {
+    inline fun thumbnail(builder: Thumbnail.() -> Unit) {
         thumbnail = Thumbnail().apply(builder)
     }
 
@@ -110,7 +109,7 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Author]
      */
-    fun author(builder: Author.() -> Unit) {
+    inline fun author(builder: Author.() -> Unit) {
         author = Author().apply(builder)
     }
 
@@ -120,13 +119,10 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Field]
      */
-    fun field(builder: Field.() -> Unit) {
-        val field = Field().apply(builder)
-        if (fields.size > 25) {
-            return
-        }
+    inline fun field(builder: Field.() -> Unit) {
+        require (fields.size < 25)
 
-        fields.add(field)
+        fields.add(Field().apply(builder))
     }
 
     class Footer {
@@ -225,9 +221,7 @@ class EmbedBuilder {
             this.url = url.toString()
         }
 
-        fun build(): MessageEmbed.Thumbnail {
-            return MessageEmbed.Thumbnail(url, proxyUrl, width, height)
-        }
+        fun build(): MessageEmbed.Thumbnail = MessageEmbed.Thumbnail(url, proxyUrl, width, height)
     }
 
     class Image {
@@ -251,9 +245,7 @@ class EmbedBuilder {
          */
         var width: Int = 0
 
-        fun build(): MessageEmbed.ImageInfo {
-            return MessageEmbed.ImageInfo(url, proxyUrl, width, height)
-        }
+        fun build(): MessageEmbed.ImageInfo = MessageEmbed.ImageInfo(url, proxyUrl, width, height)
     }
 
     class Field {
@@ -321,5 +313,4 @@ class EmbedBuilder {
             fields.map { it.build() }
         )
     }
-
 }

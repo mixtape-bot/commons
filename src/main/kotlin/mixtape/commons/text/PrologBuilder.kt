@@ -1,8 +1,15 @@
 package mixtape.commons.text
 
 import java.lang.Integer.max
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
-class ProLogBuilder {
+enum class PaddingDirection { Start, End }
+
+class ProLogBuilder(
+    private val separator: Char = ':',
+    private val direction: PaddingDirection = PaddingDirection.Start
+) {
     var lines = mutableListOf<Line>()
 
     /**
@@ -46,7 +53,12 @@ class ProLogBuilder {
             language = "prolog"
             for (line in lines) {
                 if (line.name.isNotEmpty() && line.value.toString().isNotEmpty()) {
-                    line("${line.name.padStart(padding, ' ')} : ${line.value.toString()}", false)
+                    val name = if (direction == PaddingDirection.End)
+                        line.name.padEnd(padding, ' ')
+                    else
+                        line.name.padStart(padding, ' ')
+
+                    line("$name $separator ${line.value}", false)
                 }
 
                 line()
@@ -69,7 +81,16 @@ class ProLogBuilder {
 
 data class Line(val name: String, val value: Any)
 
-fun buildProlog(builder: ProLogBuilder.() -> Unit): String =
-    ProLogBuilder()
+inline fun buildProlog(
+    separator: Char = ':',
+    direction: PaddingDirection = PaddingDirection.Start,
+    builder: ProLogBuilder.() -> Unit
+): String {
+    contract {
+        callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
+    }
+
+    return ProLogBuilder(separator, direction)
         .apply(builder)
         .build()
+}

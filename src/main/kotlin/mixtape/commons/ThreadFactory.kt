@@ -5,25 +5,33 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicInteger
 
 fun threadFactory(
-    name: String,
+    name: String = "",
     daemon: Boolean? = null,
     priority: Int? = null,
     exceptionHandler: Thread.UncaughtExceptionHandler? = null
-): ThreadFactory {
-    val counter = AtomicInteger()
-    return ThreadFactory { runnable ->
-        Thread(runnable, name.format(Locale.ROOT, counter.getAndIncrement())).apply {
-            daemon?.let {
-                this.isDaemon = it
-            }
+): ThreadFactory = Threads.createFactory(name, daemon, priority, exceptionHandler)
 
-            priority?.let {
-                this.priority = priority
-            }
+object Threads {
+    private val poolCounter = AtomicInteger()
 
-            exceptionHandler?.let {
-                this.uncaughtExceptionHandler = it
+    fun createFactory(name: String = "", daemon: Boolean? = null, priority: Int? = null, exceptionHandler: Thread.UncaughtExceptionHandler? = null): Factory {
+        return object : Factory {
+            override val poolId = poolCounter.getAndIncrement()
+
+            val counter = AtomicInteger()
+            val nameFormat = name.ifBlank { "mix-thread-pool-$poolId-thread-%d" }
+
+            override fun newThread(r: Runnable): Thread {
+                return Thread(r, nameFormat.format(Locale.ROOT, counter.getAndIncrement())).apply {
+                    daemon?.let { isDaemon = it }
+                    priority?.let { this.priority = it }
+                    exceptionHandler?.let { uncaughtExceptionHandler = it }
+                }
             }
         }
+    }
+
+    interface Factory: ThreadFactory {
+        val poolId: Int
     }
 }

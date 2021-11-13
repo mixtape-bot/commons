@@ -3,8 +3,14 @@ package mixtape.commons.extensions
 import mixtape.commons.jda.EmbedBuilder
 import mixtape.commons.jda.EmbedBuilder.*
 import net.dv8tion.jda.api.entities.MessageEmbed
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 inline fun buildEmbed(build: EmbedBuilder.() -> Unit): MessageEmbed {
+    contract {
+        callsInPlace(build, InvocationKind.EXACTLY_ONCE)
+    }
+
     return EmbedBuilder()
         .apply(build)
         .build()

@@ -7,7 +7,7 @@ import java.net.URL
 
 val argumentExamples = hashMapOf(
     /* kotlin things */
-    String::class.java to "\"some thing\"",
+    String::class.java to "\"something\"",
     Int::class to "1",
     Long::class.java to "3",
     Double::class.java to "0.0",
@@ -19,7 +19,7 @@ val argumentExamples = hashMapOf(
     User::class.java to "@User",
     Role::class.java to "@DJ",
     TextChannel::class.java to "#general",
-    VoiceChannel::class.java to "Music",
+    VoiceChannel::class.java to "#!Music",
 
     /* java things */
     URL::class.java to "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -31,17 +31,15 @@ val argumentExamples = hashMapOf(
 /**
  * Generates a usage string for this Executable.
  *
- * Example: `<toBan: Member> [reason: String]`
+ * Example: `<toBan: Member> [...reason: String]`
  *
  * @param withTypes
  *   Whether argument types should be included.
  */
 fun Executable.generateUsage(withTypes: Boolean = true): String {
-    val usage = buildString {
-        arguments.forEach { append("${it.format(withTypes)} ") }
-    }
-
-    return usage.trim()
+    return arguments
+        .joinToString(" ") { it.format(withTypes) }
+        .trim()
 }
 
 /**
@@ -55,13 +53,13 @@ fun Executable.generateUsage(withTypes: Boolean = true): String {
  *
  * would be
  *
- * `@Member "some thing"`
+ * `@Member "something"`
  */
 fun Executable.generateDefaultExample(): String =
     arguments
         .joinToString(" ") {
             argumentExamples[it.type]
-                ?: if (it.type.isEnum) it.type.enumConstants.first().toString().toLowerCase()
+                ?: if (it.type.isEnum) it.type.enumConstants.first().toString().lowercase()
                 else "[unknown]"
         }
         .trim()

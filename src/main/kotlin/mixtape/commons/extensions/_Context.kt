@@ -6,6 +6,8 @@ import mixtape.commons.jda.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.VoiceChannel
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * The member's current [VoiceChannel], if any.
@@ -35,12 +37,10 @@ val Context.selfMember: Member?
  *   Whether to mention we're replying to.
  */
 fun Context.reply(content: String, mention: Boolean = false) {
-    messageChannel.sendMessage(content)
-        .apply {
-            mentionRepliedUser(mention)
-            reference(message)
-            queue()
-        }
+    return channel.sendMessage(content)
+        .mentionRepliedUser(mention)
+        .reference(message)
+        .queue()
 }
 
 /**
@@ -49,16 +49,18 @@ fun Context.reply(content: String, mention: Boolean = false) {
  * @param mention
  *   Whether to mention the user we're replying to.
  *
- * @param builder
+ * @param embed
  *   The embed builder.
  */
-fun Context.reply(mention: Boolean = false, builder: EmbedBuilder.() -> Unit) {
-    messageChannel.sendMessageEmbeds(buildEmbed(builder))
-        .apply {
-            mentionRepliedUser(mention)
-            reference(message)
-            queue()
-        }
+inline fun Context.reply(mention: Boolean = false, embed: EmbedBuilder.() -> Unit) {
+    contract {
+        callsInPlace(embed, InvocationKind.EXACTLY_ONCE)
+    }
+
+    return channel.sendMessageEmbeds(buildEmbed(embed))
+        .mentionRepliedUser(mention)
+        .reference(message)
+        .queue()
 }
 
 /**
@@ -71,7 +73,7 @@ fun Context.reply(mention: Boolean = false, builder: EmbedBuilder.() -> Unit) {
  *   Whether to mention we're replying to.
  */
 suspend fun Context.replyAsync(content: String, mention: Boolean = false): Message {
-    return messageChannel.sendMessage(content)
+    return channel.sendMessage(content)
         .mentionRepliedUser(mention)
         .reference(message)
         .submit()
@@ -84,12 +86,17 @@ suspend fun Context.replyAsync(content: String, mention: Boolean = false): Messa
  * @param mention
  *   Whether to mention the user we're replying to.
  *
- * @param builder
+ * @param embed
  *   The embed builder.
  */
-suspend fun Context.replyAsync(mention: Boolean = false, builder: EmbedBuilder.() -> Unit): Message {
-    return messageChannel.sendMessageEmbeds(buildEmbed(builder))
+suspend inline fun Context.replyAsync(mention: Boolean = false, embed: EmbedBuilder.() -> Unit): Message {
+    contract {
+        callsInPlace(embed, InvocationKind.EXACTLY_ONCE)
+    }
+
+    return channel.sendMessageEmbeds(buildEmbed(embed))
         .mentionRepliedUser(mention)
         .reference(message)
-        .submit().await()
+        .submit()
+        .await()
 }

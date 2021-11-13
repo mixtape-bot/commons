@@ -1,5 +1,8 @@
 package mixtape.commons.text
 
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
 class CodeBlockBuilder {
     var language: String = ""
 
@@ -19,7 +22,12 @@ class CodeBlockBuilder {
         }
 }
 
-fun buildCodeBlock(builder: CodeBlockBuilder.() -> Unit): String =
-    CodeBlockBuilder()
+inline fun buildCodeBlock(builder: CodeBlockBuilder.() -> Unit): String {
+    contract {
+        callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
+    }
+
+    return CodeBlockBuilder()
         .apply(builder)
         .build()
+}

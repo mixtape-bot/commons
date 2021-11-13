@@ -2,11 +2,10 @@ package mixtape.commons.extensions
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import mixtape.commons.jda.FlowingEventManager
+import mixtape.commons.jda.events.FlowingEventManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.GenericEvent
-import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
@@ -21,8 +20,7 @@ import kotlin.contracts.contract
  *
  * @return The created [JDA] instance.
  */
-@OptIn(ExperimentalContracts::class)
-fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
+inline fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
     contract {
         callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
     }

@@ -1,15 +1,14 @@
-package mixtape.commons.jda
+package mixtape.commons.jda.events
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.ExceptionEvent
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.ShutdownEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.IEventManager
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -22,8 +21,12 @@ import kotlin.coroutines.CoroutineContext
  */
 class FlowingEventManager(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    private val eventFlow: MutableSharedFlow<GenericEvent> = MutableSharedFlow<GenericEvent>(extraBufferCapacity = Int.MAX_VALUE)
+    private val eventFlow: MutableSharedFlow<GenericEvent> = MutableSharedFlow(extraBufferCapacity = Int.MAX_VALUE)
 ) : IEventManager, CoroutineScope {
+    companion object {
+        val logger = KotlinLogging.logger { }
+    }
+
     override val coroutineContext: CoroutineContext
         get() = dispatcher + SupervisorJob()
 
@@ -44,15 +47,16 @@ class FlowingEventManager(
      */
     inline fun <reified T : GenericEvent> on(
         scope: CoroutineScope = this,
-        crossinline block: suspend T.() -> Unit
+        noinline block: suspend T.() -> Unit
     ): Job {
-        return events.filterIsInstance<T>().onEach { event ->
-            launch {
+        return events
+            .filterIsInstance<T>()
+            .onEach { event ->
                 event
                     .runCatching { block() }
-                    .onFailure { logger.error("Error occurred while handling ${T::class.simpleName}", it) }
+                    .onFailure { logger.error(it) { "Error occurred while handling ${T::class.simpleName}" } }
             }
-        }.launchIn(scope)
+            .launchIn(scope)
     }
 
     /**
@@ -77,10 +81,7 @@ class FlowingEventManager(
      *   The [EventListener] to register
      */
     override fun register(listener: Any) {
-        require(listener is EventListener) {
-            "Listener must implement EventListener"
-        }
-
+        require(listener is EventListener) { "Listener must implement EventListener" }
         listeners[listener] = on(this, listener::onEvent)
     }
 
@@ -91,10 +92,7 @@ class FlowingEventManager(
      *   The [EventListener] to remove
      */
     override fun unregister(listener: Any) {
-        require(listener is EventListener) {
-            "Listener must implement EventListener"
-        }
-
+        require(listener is EventListener) { "Listener must implement EventListener" }
         listeners.remove(listener)?.cancel()
     }
 
@@ -103,9 +101,5 @@ class FlowingEventManager(
      */
     override fun getRegisteredListeners(): List<Any> {
         return listeners.keys.toList()
-    }
-
-    companion object {
-        val logger: Logger = LoggerFactory.getLogger(FlowingEventManager::class.java)
     }
 }

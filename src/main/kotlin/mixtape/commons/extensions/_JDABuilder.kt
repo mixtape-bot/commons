@@ -2,7 +2,7 @@ package mixtape.commons.extensions
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import mixtape.commons.jda.FlowingEventManager
+import mixtape.commons.jda.events.FlowingEventManager
 import net.dv8tion.jda.api.JDABuilder
 
 /**

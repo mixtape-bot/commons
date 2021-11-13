@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "gg.mixtape"
-version = "1.3.0"
+version = "1.3.5"
 
 repositories {
     maven("https://dimensional.jfrog.io/artifactory/maven")
@@ -20,15 +20,18 @@ dependencies {
     implementation(Dependencies.kotlinxCoroutines)
     implementation(Dependencies.kotlinxCoroutinesJdk8)
 
+    /* logging */
+    implementation(Dependencies.kotlinLogging)
+
     /* discord */
     api(Dependencies.flight)
     api(Dependencies.jda)
 }
 
 /* tasks */
-val sourcesJar = task<Jar>("sourcesJar") {
+val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
-    from(sourceSets["main"].allJava)
+    from(sourceSets["main"].allSource)
 }
 
 tasks.build {
@@ -52,6 +55,7 @@ tasks.withType<KotlinCompile> {
             CompilerArgs.requiresOptIn,
             CompilerArgs.experimentalStdlibApi,
             CompilerArgs.experimentalCoroutinesApi,
+            CompilerArgs.experimentalContracts,
             CompilerArgs.flowPreview
         )
     }
