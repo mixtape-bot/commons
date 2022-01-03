@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.JDABuilder
  *
  * @return JDABuilder, useful for chaining
  */
-fun JDABuilder.useFlowingEventManager(dispatcher: CoroutineDispatcher = Dispatchers.Default): JDABuilder {
+public fun JDABuilder.useFlowingEventManager(dispatcher: CoroutineDispatcher = Dispatchers.Default): JDABuilder {
     setEventManager(FlowingEventManager(dispatcher))
     return this
 }

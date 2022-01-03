@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import kotlin.coroutines.CoroutineContext
 
-abstract class CoroutineListener(private val dispatcher: CoroutineDispatcher = Dispatchers.Default) : EventListener, CoroutineScope {
+public abstract class CoroutineListener(private val dispatcher: CoroutineDispatcher = Dispatchers.Default) : EventListener, CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = dispatcher + SupervisorJob()
 
@@ -15,5 +15,5 @@ abstract class CoroutineListener(private val dispatcher: CoroutineDispatcher = D
         }
     }
 
-    abstract suspend fun handleEvent(event: GenericEvent)
+    public abstract suspend fun handleEvent(event: GenericEvent)
 }

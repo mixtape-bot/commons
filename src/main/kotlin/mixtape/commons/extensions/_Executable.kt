@@ -1,30 +1,36 @@
 package mixtape.commons.extensions
 
+import me.devoxin.flight.internal.arguments.types.Mentionable
 import me.devoxin.flight.internal.arguments.types.Snowflake
 import me.devoxin.flight.internal.entities.Executable
 import net.dv8tion.jda.api.entities.*
 import java.net.URL
+import java.util.HashMap
 
-val argumentExamples = hashMapOf(
+public val argumentExamples: HashMap<Class<*>, String> = hashMapOf(
     /* kotlin things */
     String::class.java to "\"something\"",
-    Int::class to "1",
+    Int::class.java to "1",
     Long::class.java to "3",
     Double::class.java to "0.0",
+    Float::class.java to "0.0",
     Boolean::class.java to "no",
 
     /* jda/discord */
     Snowflake::class.java to "396096412116320258",
+    Mentionable::class.java to "@Member/@Role",
     Member::class.java to "@Member",
     User::class.java to "@User",
-    Role::class.java to "@DJ",
+    Role::class.java to "@Role",
     TextChannel::class.java to "#general",
     VoiceChannel::class.java to "#!Music",
 
     /* java things */
     URL::class.java to "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    java.lang.Integer::class.java to "0",
     java.lang.Long::class.java to "0",
     java.lang.Double::class.java to "0.0",
+    java.lang.Float::class.java to "0.0",
     java.lang.Boolean::class.java to "yes",
 )
 
@@ -36,7 +42,7 @@ val argumentExamples = hashMapOf(
  * @param withTypes
  *   Whether argument types should be included.
  */
-fun Executable.generateUsage(withTypes: Boolean = true): String {
+public fun Executable.generateUsage(withTypes: Boolean = true): String {
     return arguments
         .joinToString(" ") { it.format(withTypes) }
         .trim()
@@ -55,7 +61,7 @@ fun Executable.generateUsage(withTypes: Boolean = true): String {
  *
  * `@Member "something"`
  */
-fun Executable.generateDefaultExample(): String =
+public fun Executable.generateDefaultExample(): String =
     arguments
         .joinToString(" ") {
             argumentExamples[it.type]

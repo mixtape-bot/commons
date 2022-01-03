@@ -5,63 +5,65 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
 import java.net.URL
 import java.time.OffsetDateTime
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
-class EmbedBuilder {
-    companion object {
-        const val ZERO_WIDTH_SPACE = "\u200b"
+public open class EmbedBuilder {
+    public companion object {
+        public const val ZERO_WIDTH_SPACE: String = "\u200b"
 
-        const val MAX_TITLE_LENGTH = 256
-        const val MAX_FIELD_NAME_LENGTH = 256
-        const val MAX_FIELD_VALUE_LENGTH = 1024
-        const val MAX_AUTHOR_NAME_LENGTH = 256
-        const val MAX_FOOTER_TEXT_LENGTH = 2048
-        const val MAX_DESCRIPTION_LENGTH = 4096
+        public const val MAX_TITLE_LENGTH: Int = 256
+        public const val MAX_FIELD_NAME_LENGTH: Int = 256
+        public const val MAX_FIELD_VALUE_LENGTH: Int = 1024
+        public const val MAX_AUTHOR_NAME_LENGTH: Int = 256
+        public const val MAX_FOOTER_TEXT_LENGTH: Int = 2048
+        public const val MAX_DESCRIPTION_LENGTH: Int = 4096
     }
 
     /**
      * All fields in the embed.
      */
-    var fields: MutableList<Field> = mutableListOf()
+    public var fields: MutableList<Field> = mutableListOf()
 
     /**
      * Information of the embed author.
      */
-    var author: Author? = null
+    public var author: Author? = null
 
     /**
      * Title information, if any.
      */
-    var title: Title? = null
+    public var title: Title? = null
 
     /**
      * Image information of the embed.
      */
-    var image: Image? = null
+    public var image: Image? = null
 
     /**
      * Thumbnail information of the embed.
      */
-    var thumbnail: Thumbnail? = null
+    public var thumbnail: Thumbnail? = null
 
     /**
      * Footer information of the embed.
      */
-    var footer: Footer? = null
+    public var footer: Footer? = null
 
     /**
      * The color of this embed, defaults to [Role.DEFAULT_COLOR_RAW]
      */
-    var color: Int = Role.DEFAULT_COLOR_RAW
+    public var color: Int = Role.DEFAULT_COLOR_RAW
 
     /**
      * The description text for this embed.
      */
-    var description: String? = null
+    public var description: String? = null
 
     /**
      * The timestamp of this embed.
      */
-    var timestamp: OffsetDateTime? = null
+    public var timestamp: OffsetDateTime? = null
 
     /**
      * Sets the [Title] of this embed using [builder].
@@ -69,7 +71,9 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Title]
      */
-    inline fun title(builder: Title.() -> Unit) {
+    public inline fun title(builder: Title.() -> Unit) {
+        contract { callsInPlace(builder, InvocationKind.EXACTLY_ONCE) }
+
         title = Title().apply(builder)
     }
 
@@ -79,7 +83,9 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Footer]
      */
-    inline fun footer(builder: Footer.() -> Unit) {
+    public inline fun footer(builder: Footer.() -> Unit) {
+        contract { callsInPlace(builder, InvocationKind.EXACTLY_ONCE) }
+
         footer = Footer().apply(builder)
     }
 
@@ -89,7 +95,9 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Image]
      */
-    inline fun image(builder: Image.() -> Unit) {
+    public inline fun image(builder: Image.() -> Unit) {
+        contract { callsInPlace(builder, InvocationKind.EXACTLY_ONCE) }
+
         image = Image().apply(builder)
     }
 
@@ -99,7 +107,9 @@ class EmbedBuilder {
      * @param builder
      *   Configures the thumbnail data
      */
-    inline fun thumbnail(builder: Thumbnail.() -> Unit) {
+    public inline fun thumbnail(builder: Thumbnail.() -> Unit) {
+        contract { callsInPlace(builder, InvocationKind.EXACTLY_ONCE) }
+
         thumbnail = Thumbnail().apply(builder)
     }
 
@@ -109,7 +119,9 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Author]
      */
-    inline fun author(builder: Author.() -> Unit) {
+    public inline fun author(builder: Author.() -> Unit) {
+        contract { callsInPlace(builder, InvocationKind.EXACTLY_ONCE) }
+
         author = Author().apply(builder)
     }
 
@@ -119,29 +131,31 @@ class EmbedBuilder {
      * @param builder
      *   Configures the [Field]
      */
-    inline fun field(builder: Field.() -> Unit) {
+    public inline fun field(builder: Field.() -> Unit) {
+        contract { callsInPlace(builder, InvocationKind.EXACTLY_ONCE) }
+
         require (fields.size < 25)
 
         fields.add(Field().apply(builder))
     }
 
-    class Footer {
+    public class Footer {
         /**
          * Footer text.
          */
-        var text: String? = null
+        public var text: String? = null
 
         /**
          * URL of the footer icon, only supports http(s) and attachments.
          */
-        var iconUrl: String? = null
+        public var iconUrl: String? = null
 
         /**
          * A proxied url of the footer icon.
          */
-        var proxyIconUrl: String? = null
+        public var proxyIconUrl: String? = null
 
-        fun build(): MessageEmbed.Footer {
+        public fun build(): MessageEmbed.Footer {
             require(!text.isNullOrEmpty() && text!!.length in 1..MAX_FOOTER_TEXT_LENGTH) {
                 "Footer text must not be null or empty and cannot exceed $MAX_FOOTER_TEXT_LENGTH characters."
             }
@@ -150,41 +164,41 @@ class EmbedBuilder {
         }
     }
 
-    class Title {
+    public class Title {
         /**
          * Title of the embed.
          */
-        var text: String? = null
+        public var text: String? = null
 
         /**
          * URL of the embed.
          */
-        var url: String? = null
+        public var url: String? = null
 
         /**
          */
-        fun url(url: URL) {
+        public fun url(url: URL) {
             this.url = url.toString()
         }
     }
 
-    class Author {
+    public class Author {
         /**
          * Name of author
          */
-        var name: String? = null
+        public var name: String? = null
 
         /**
          * URL of author
          */
-        var url: String? = null
+        public var url: String? = null
 
         /**
          * URL of author icon, only supports http(s) and attachments.
          */
-        var iconUrl: String? = null
+        public var iconUrl: String? = null
 
-        fun build(): MessageEmbed.AuthorInfo {
+        public fun build(): MessageEmbed.AuthorInfo {
             require(!name.isNullOrEmpty() && name!!.length in 1..MAX_AUTHOR_NAME_LENGTH) {
                 "Author name must not be null or empty. And cannot exceed $MAX_AUTHOR_NAME_LENGTH characters."
             }
@@ -194,77 +208,77 @@ class EmbedBuilder {
 
     }
 
-    class Thumbnail {
+    public class Thumbnail {
         /**
          * Source url of thumbnail, only supports http(s) and attachments.
          */
-        var url: String? = null
+        public var url: String? = null
 
         /**
          * A proxied url of the thumbnail
          */
-        var proxyUrl: String? = null
+        public var proxyUrl: String? = null
 
         /**
          * Height of the thumbnail
          */
-        var height: Int = 0
+        public var height: Int = 0
 
         /**
          * Width of the thumbnail
          */
-        var width: Int = 0
+        public var width: Int = 0
 
         /**
          */
-        fun url(url: URL) {
+        public fun url(url: URL) {
             this.url = url.toString()
         }
 
-        fun build(): MessageEmbed.Thumbnail = MessageEmbed.Thumbnail(url, proxyUrl, width, height)
+        public fun build(): MessageEmbed.Thumbnail = MessageEmbed.Thumbnail(url, proxyUrl, width, height)
     }
 
-    class Image {
+    public class Image {
         /**
          * Source url of image, only supports http(s) and attachments.
          */
-        var url: String? = null
+        public var url: String? = null
 
         /**
          * A proxied url of the image
          */
-        var proxyUrl: String? = null
+        public var proxyUrl: String? = null
 
         /**
          * Height of the image
          */
-        var height: Int = 0
+        public var height: Int = 0
 
         /**
          * Width of the image
          */
-        var width: Int = 0
+        public var width: Int = 0
 
-        fun build(): MessageEmbed.ImageInfo = MessageEmbed.ImageInfo(url, proxyUrl, width, height)
+        public fun build(): MessageEmbed.ImageInfo = MessageEmbed.ImageInfo(url, proxyUrl, width, height)
     }
 
-    class Field {
+    public class Field {
         /**
          * Name of the field.
          */
-        var name: String? = null
+        public var name: String? = null
 
         /**
          * Value of the field.
          */
-        var value: String? = null
+        public var value: String? = null
 
         /**
          * Whether this field should display inlined.
          */
-        var inline: Boolean = false
+        public var inline: Boolean = false
 
-        fun build(): MessageEmbed.Field {
+        public fun build(): MessageEmbed.Field {
             require(!name.isNullOrEmpty() && name!!.length in 1..MAX_FIELD_NAME_LENGTH) {
                 "Field name must not be null or empty. And cannot exceed $MAX_FIELD_NAME_LENGTH characters."
             }
@@ -280,7 +294,7 @@ class EmbedBuilder {
     /**
      * Builds a usable [MessageEmbed].
      */
-    fun build(): MessageEmbed {
+    public fun build(): MessageEmbed {
         title?.let {
             require(!it.text.isNullOrEmpty() && it.text!!.length in 1..MAX_TITLE_LENGTH) {
                 "Title text must not be empty or exceed $MAX_TITLE_LENGTH characters."

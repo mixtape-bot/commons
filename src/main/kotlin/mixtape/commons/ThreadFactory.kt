@@ -4,17 +4,17 @@ import java.util.*
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicInteger
 
-fun threadFactory(
+public fun threadFactory(
     name: String = "",
     daemon: Boolean? = null,
     priority: Int? = null,
     exceptionHandler: Thread.UncaughtExceptionHandler? = null
 ): ThreadFactory = Threads.createFactory(name, daemon, priority, exceptionHandler)
 
-object Threads {
+public object Threads {
     private val poolCounter = AtomicInteger()
 
-    fun createFactory(name: String = "", daemon: Boolean? = null, priority: Int? = null, exceptionHandler: Thread.UncaughtExceptionHandler? = null): Factory {
+    public fun createFactory(name: String = "", daemon: Boolean? = null, priority: Int? = null, exceptionHandler: Thread.UncaughtExceptionHandler? = null): Factory {
         return object : Factory {
             override val poolId = poolCounter.getAndIncrement()
 
@@ -31,7 +31,7 @@ object Threads {
         }
     }
 
-    interface Factory: ThreadFactory {
-        val poolId: Int
+    public interface Factory: ThreadFactory {
+        public val poolId: Int
     }
 }

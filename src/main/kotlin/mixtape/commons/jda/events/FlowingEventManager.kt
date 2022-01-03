@@ -3,6 +3,7 @@ package mixtape.commons.jda.events
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import mu.KLogger
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.ExceptionEvent
 import net.dv8tion.jda.api.events.GenericEvent
@@ -19,18 +20,19 @@ import kotlin.coroutines.CoroutineContext
  *   The dispatcher to use, it's recommended to use the
  *   [net.dv8tion.jda.internal.utils.config.ThreadingConfig.eventPool] as a coroutine dispatcher
  */
-class FlowingEventManager(
+public class FlowingEventManager(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    private val eventFlow: MutableSharedFlow<GenericEvent> = MutableSharedFlow(extraBufferCapacity = Int.MAX_VALUE)
+    private val eventFlow: MutableSharedFlow<GenericEvent> = MutableSharedFlow(extraBufferCapacity = Int.MAX_VALUE),
+    public val onLaunchesNewCoroutine: Boolean = false
 ) : IEventManager, CoroutineScope {
-    companion object {
-        val logger = KotlinLogging.logger { }
+    public companion object {
+        public val log: KLogger = KotlinLogging.logger { }
     }
 
     override val coroutineContext: CoroutineContext
         get() = dispatcher + SupervisorJob()
 
-    val events
+    public val events: Flow<GenericEvent>
         get() = eventFlow.buffer(Channel.UNLIMITED)
 
     private val listeners = hashMapOf<EventListener, Job>()
@@ -45,16 +47,20 @@ class FlowingEventManager(
      *
      * @return Job
      */
-    inline fun <reified T : GenericEvent> on(
+    public inline fun <reified T : GenericEvent> on(
         scope: CoroutineScope = this,
         noinline block: suspend T.() -> Unit
     ): Job {
         return events
             .filterIsInstance<T>()
             .onEach { event ->
-                event
-                    .runCatching { block() }
-                    .onFailure { logger.error(it) { "Error occurred while handling ${T::class.simpleName}" } }
+                val handle = suspend {
+                    event
+                        .runCatching { block() }
+                        .onFailure { log.error(it) { "Error occurred while handling ${T::class.simpleName}" } }
+                }
+
+                if (onLaunchesNewCoroutine) launch { handle() } else handle()
             }
             .launchIn(scope)
     }
@@ -62,15 +68,17 @@ class FlowingEventManager(
     /**
      *
      */
-    override fun handle(event: GenericEvent) = runBlocking {
-        try {
-            eventFlow.emit(event)
-        } catch (ex: Exception) {
-            eventFlow.emit(ExceptionEvent(event.jda, ex, false))
-        }
+    override fun handle(event: GenericEvent) {
+        runBlocking {
+            try {
+                eventFlow.emit(event)
+            } catch (ex: Exception) {
+                eventFlow.emit(ExceptionEvent(event.jda, ex, false))
+            }
 
-        if (event is ShutdownEvent) {
-            currentCoroutineContext().cancel()
+            if (event is ShutdownEvent) {
+                currentCoroutineContext().cancel()
+            }
         }
     }
 
@@ -82,6 +90,7 @@ class FlowingEventManager(
      */
     override fun register(listener: Any) {
         require(listener is EventListener) { "Listener must implement EventListener" }
+
         listeners[listener] = on(this, listener::onEvent)
     }
 
@@ -93,13 +102,12 @@ class FlowingEventManager(
      */
     override fun unregister(listener: Any) {
         require(listener is EventListener) { "Listener must implement EventListener" }
+
         listeners.remove(listener)?.cancel()
     }
 
     /**
      * Returns all registered listeners in [listeners]
      */
-    override fun getRegisteredListeners(): List<Any> {
-        return listeners.keys.toList()
-    }
+    override fun getRegisteredListeners(): List<Any> = listeners.keys.toList()
 }

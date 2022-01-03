@@ -1,31 +1,53 @@
+import lol.dimensional.gradle.dsl.Version
+import lol.dimensional.gradle.dsl.ReleaseType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven("https://maven.dimensional.fun/releases")
+    }
+
+    dependencies {
+        classpath("fun.dimensional.gradle:gradle-tools:1.0.2")
+    }
+}
 
 plugins {
     `maven-publish`
-    kotlin("jvm") version Versions.kotlin
+
+    kotlin("jvm") version "1.6.10"
 }
 
-group = "gg.mixtape"
-version = "1.3.5"
+val version = Version(1, 4, 0, release = ReleaseType.ReleaseCandidate)
+project.group = "gg.mixtape"
+project.version = version.asString()
+
+kotlin {
+    explicitApi()
+}
 
 repositories {
-    maven("https://dimensional.jfrog.io/artifactory/maven")
-    maven("https://m2.dv8tion.net/releases")
     mavenCentral()
+    dimensionalFun(snapshots)
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
     /* kotlin */
-    implementation(Dependencies.kotlin)
-    implementation(Dependencies.kotlinxCoroutines)
-    implementation(Dependencies.kotlinxCoroutinesJdk8)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.0")
 
     /* logging */
-    implementation(Dependencies.kotlinLogging)
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
 
     /* discord */
-    api(Dependencies.flight)
-    api(Dependencies.jda)
+    api("gg.mixtape:flight:2.5-RC.3")
+    api("net.dv8tion:JDA:5.0.0-alpha.3")
+
+    /* testing */
+    testImplementation("ch.qos.logback:logback-classic:1.2.10")
 }
 
 /* tasks */
@@ -42,7 +64,7 @@ tasks.build {
 tasks.publish {
     dependsOn(tasks.build)
     onlyIf {
-        System.getenv("JFROG_USERNAME") != null && System.getenv("JFROG_PASSWORD") != null
+        System.getenv("REPO_ALIAS") != null && System.getenv("REPO_TOKEN") != null
     }
 }
 
@@ -52,11 +74,11 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "16"
         freeCompilerArgs = listOf(
-            CompilerArgs.requiresOptIn,
-            CompilerArgs.experimentalStdlibApi,
-            CompilerArgs.experimentalCoroutinesApi,
-            CompilerArgs.experimentalContracts,
-            CompilerArgs.flowPreview
+            "-Xopt-in=kotlin.RequiresOptIn",
+            "-Xopt-in=kotlin.ExperimentalStdlibApi",
+            "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xopt-in=kotlin.contracts.ExperimentalContracts",
+            "-Xopt-in=kotlinx.coroutines.FlowPreview"
         )
     }
 }
@@ -64,18 +86,21 @@ tasks.withType<KotlinCompile> {
 /* publishing */
 publishing {
     repositories {
-        maven("https://dimensional.jfrog.io/artifactory/maven") {
-            name = "jfrog"
+        maven(version.repository.fullUrl) {
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+
             credentials {
-                username = System.getenv("JFROG_USERNAME")
-                password = System.getenv("JFROG_PASSWORD")
+                username = System.getenv("REPO_ALIAS")
+                password = System.getenv("REPO_TOKEN")
             }
         }
     }
 
     publications {
-        create<MavenPublication>("jfrog") {
-            from(components["java"])
+        create<MavenPublication>("MixtapeCommons") {
+            from(components["kotlin"])
 
             group = project.group as String
             version = project.version as String

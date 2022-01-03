@@ -6,8 +6,13 @@ import mixtape.commons.jda.events.FlowingEventManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+
+public val JDABuilder.intents: IntentProvider
+    get() = IntentProvider(this)
 
 /**
  * Convenience method for creating an instance of [JDA]
@@ -20,7 +25,7 @@ import kotlin.contracts.contract
  *
  * @return The created [JDA] instance.
  */
-inline fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
+public inline fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
     contract {
         callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
     }
@@ -41,9 +46,9 @@ inline fun JDA(token: String, builder: JDABuilder.() -> Unit): JDA {
  *
  * @return Job, can be used to cancel any further processing of [T].
  */
-inline fun <reified T : GenericEvent> JDA.on(
+public inline fun <reified T : GenericEvent> JDA.on(
     scope: CoroutineScope? = null,
-    crossinline block: suspend T.() -> Unit
+    noinline block: suspend T.() -> Unit,
 ): Job {
     require(eventManager is FlowingEventManager) {
         "JDA#on can only be used with the ${FlowingEventManager::class.simpleName}."
@@ -51,5 +56,29 @@ inline fun <reified T : GenericEvent> JDA.on(
 
     return with(eventManager as FlowingEventManager) {
         on(scope ?: this, block)
+    }
+}
+
+public class IntentProvider(private val builder: JDABuilder) {
+    public operator fun plusAssign(intents: Collection<GatewayIntent>) {
+        builder.enableIntents(intents)
+    }
+
+    public operator fun plusAssign(intent: GatewayIntent) {
+        builder.enableIntents(intent)
+    }
+
+    public operator fun minusAssign(intents: Collection<GatewayIntent>) {
+        builder.disableIntents(intents)
+        CacheFlag.values()
+            .filter { it.requiredIntent in intents }
+            .forEach { builder.disableCache(it) }
+    }
+
+    public operator fun minusAssign(intent: GatewayIntent) {
+        builder.disableIntents(intent)
+        CacheFlag.values()
+            .filter { it.requiredIntent == intent }
+            .forEach { builder.disableCache(it) }
     }
 }

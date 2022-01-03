@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
-inline fun buildEmbed(build: EmbedBuilder.() -> Unit): MessageEmbed {
+public inline fun buildEmbed(build: EmbedBuilder.() -> Unit): MessageEmbed {
     contract {
         callsInPlace(build, InvocationKind.EXACTLY_ONCE)
     }
@@ -25,9 +25,11 @@ inline fun buildEmbed(build: EmbedBuilder.() -> Unit): MessageEmbed {
  * @param url
  *   URL of the title, makes it clickable.
  */
-fun EmbedBuilder.title(text: String, url: String? = null) = title {
-    this.text = text
-    this.url = url
+public fun EmbedBuilder.title(text: String, url: String? = null) {
+    title {
+        this.text = text
+        this.url = url
+    }
 }
 
 /**
@@ -39,9 +41,11 @@ fun EmbedBuilder.title(text: String, url: String? = null) = title {
  * @param iconUrl
  *   URL of the footer icon, if any.
  */
-fun EmbedBuilder.footer(text: String, iconUrl: String? = null) = footer {
-    this.text = text
-    this.iconUrl = iconUrl
+public fun EmbedBuilder.footer(text: String, iconUrl: String? = null) {
+    footer {
+        this.text = text
+        this.iconUrl = iconUrl
+    }
 }
 
 /**
@@ -50,8 +54,10 @@ fun EmbedBuilder.footer(text: String, iconUrl: String? = null) = footer {
  * @param url
  *   URL of the image to include
  */
-fun EmbedBuilder.image(url: String) = image {
-    this.url = url
+public fun EmbedBuilder.image(url: String) {
+    image {
+        this.url = url
+    }
 }
 
 /**
@@ -60,8 +66,10 @@ fun EmbedBuilder.image(url: String) = image {
  * @param url
  *   URL of the image to include
  */
-fun EmbedBuilder.thumbnail(url: String) = thumbnail {
-    this.url = url
+public fun EmbedBuilder.thumbnail(url: String) {
+    thumbnail {
+        this.url = url
+    }
 }
 
 /**
@@ -70,10 +78,12 @@ fun EmbedBuilder.thumbnail(url: String) = thumbnail {
  * @param name
  *   Value to set
  */
-fun EmbedBuilder.author(name: String, url: String? = null, iconUrl: String? = null) = author {
-    this.name = name
-    this.url = url
-    this.iconUrl = iconUrl
+public fun EmbedBuilder.author(name: String, url: String? = null, iconUrl: String? = null) {
+    author {
+        this.name = name
+        this.url = url
+        this.iconUrl = iconUrl
+    }
 }
 
 /**
@@ -88,7 +98,7 @@ fun EmbedBuilder.author(name: String, url: String? = null, iconUrl: String? = nu
  * @param inline
  *   Whether this field is inlined with the others.
  */
-fun EmbedBuilder.field(name: String?, value: Any, inline: Boolean = false) {
+public fun EmbedBuilder.field(name: String?, value: Any, inline: Boolean = false) {
     field {
         this.name = name ?: EmbedBuilder.ZERO_WIDTH_SPACE
         this.value = value.toString()
